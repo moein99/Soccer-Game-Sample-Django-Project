@@ -32,6 +32,7 @@ ALLOWED_HOSTS = []
 
 INSTALLED_APPS = [
     'game',
+    'rest_framework',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -99,6 +100,28 @@ AUTH_PASSWORD_VALIDATORS = [
         'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
     },
 ]
+
+
+PLAYER = {
+    "start_age": 18,
+    "end_age": 40,
+    "initial_market_value": 1000000
+}
+
+TEAM = {
+    "initial_goal_keepers": 3,
+    "initial_defenders": 6,
+    "initial_mid_fielders": 6,
+    "initial_attackers": 5,
+    "initial_balance": 5000000
+}
+
+REDIS = {
+    "host": "localhost",
+    "port": 6379,
+    "db": 0,
+    "expire_amount": 3600,  # seconds
+}
 
 
 # Internationalization

@@ -16,6 +16,11 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path
 
+from game.api.login import LoginAPI
+from game.api.register import RegisterAPI
+
 urlpatterns = [
     path('admin/', admin.site.urls),
+    path('api/register', RegisterAPI.as_view(), name="register"),
+    path('api/login', LoginAPI.as_view(), name="login"),
 ]
