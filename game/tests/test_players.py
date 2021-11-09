@@ -4,7 +4,7 @@ from django.conf import settings
 from django.test import TestCase, Client
 from rest_framework import status
 
-from game.models import User, Ownership, Player
+from game.models import User, Player
 
 
 class PlayersTestCase(TestCase):
@@ -63,7 +63,7 @@ class PlayersTestCase(TestCase):
 
     def test_update_player(self):
         user1 = User.objects.get(email=self.email1)
-        player_identifier = Ownership.objects.filter(team=user1.team)[0].player.identifier
+        player_identifier = Player.objects.filter(team=user1.team)[0].identifier
         data = {
             "identifier": player_identifier,
             "first_name": "new name",
@@ -89,7 +89,7 @@ class PlayersTestCase(TestCase):
 
     def test_403_when_trying_to_update_another_player(self):
         user1 = User.objects.get(email=self.email1)
-        player_identifier = Ownership.objects.filter(team=user1.team)[0].player.identifier
+        player_identifier = Player.objects.filter(team=user1.team)[0].identifier
         data = {
             "identifier": player_identifier,
             "first_name": "new name",
