@@ -4,49 +4,34 @@ from django.test import TestCase, Client
 from rest_framework import status
 
 from game.models import User
+from game.tests import TestMixin, Method, APIPath
 
 
-class TeamTestCase(TestCase):
+class TeamTestCase(TestCase, TestMixin):
     def setUp(self) -> None:
         self.client = Client()
         self.email = "login@gmail.com"
-        self.register()
-        self.session = self.login()
+        self.create_user(email=self.email, password="abc123")
+        self.session = self.login(client=self.client, email=self.email, password="abc123")
 
-    def register(self):
-        register_data = {
-            "email": self.email,
-            "password": "abc123",
-            "repeated_password": "abc123",
-            "team_name": "real madrid",
-            "team_country": "spain",
-        }
-        self.client.post(
-            path="/api/register",
-            data=json.dumps(register_data),
-            content_type='application/json'
-        )
-
-    def login(self):
-        data = {
-            "email": self.email,
-            "password": "abc123",
-        }
-        response = self.client.post(
-            path="/api/login",
-            data=json.dumps(data),
-            content_type='application/json'
-        )
-        return json.loads(response.content)["session_id"]
+    def call(self, method, session, data=None):
+        if method == Method.get:
+            return self.client.get(
+                path=APIPath.team,
+                **{"HTTP_SESSION": session}
+            )
+        elif method == Method.put:
+            return self.client.put(
+                path=APIPath.team,
+                data=json.dumps(data),
+                content_type='application/json',
+                **{"HTTP_SESSION": session}
+            )
 
     def test_get_team(self):
-        response = self.client.get(
-            path="/api/team",
-            **{"HTTP_SESSION": self.session}
-        )
+        response = self.call(Method.get, self.session)
         data = json.loads(response.content)
         fields = ['name', 'country', 'balance', 'value']
-
         for field in fields:
             self.assertTrue(field in data)
         self.assertEqual(len(data), len(fields))
@@ -56,12 +41,7 @@ class TeamTestCase(TestCase):
             "name": "New Real Madrid",
             "country": "USA",
         }
-        response = self.client.post(
-            path="/api/team",
-            data=json.dumps(data),
-            content_type='application/json',
-            **{"HTTP_SESSION": self.session}
-        )
+        response = self.call(method=Method.put, session=self.session, data=data)
         data = json.loads(response.content)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         update_fields = ['name', 'country']

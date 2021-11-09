@@ -6,11 +6,19 @@ from django.test import TestCase, Client
 from rest_framework import status
 
 from game.models import Team, User, PlayerRole
+from game.tests import APIPath
 
 
 class RegisterTestCase(TestCase):
     def setUp(self) -> None:
         self.client = Client()
+
+    def call(self, data):
+        return self.client.post(
+            path=APIPath.register,
+            data=json.dumps(data),
+            content_type='application/json'
+        )
 
     def test_register(self):
         data = {
@@ -20,11 +28,7 @@ class RegisterTestCase(TestCase):
             "team_name": "Real Madrid",
             "team_country": "Spain",
         }
-        response = self.client.post(
-            path="/api/register",
-            data=json.dumps(data),
-            content_type='application/json'
-        )
+        response = self.call(data)
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         self.assertEqual(User.objects.count(), 1)
         self.assertEqual(Team.objects.count(), 1)
@@ -72,9 +76,5 @@ class RegisterTestCase(TestCase):
             },
         ]
         for data in bad_inputs:
-            response = self.client.post(
-                path="/api/register",
-                data=json.dumps(data),
-                content_type='application/json'
-            )
+            response = self.call(data=data)
             self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
