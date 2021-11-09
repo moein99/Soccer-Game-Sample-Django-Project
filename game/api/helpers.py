@@ -2,11 +2,23 @@ import hashlib
 
 import redis
 from django.conf import settings
+from rest_framework.permissions import BasePermission
 
 from game.models import Team, Player, Ownership, PlayerRole
 
 
 REDIS_POOL = redis.ConnectionPool(host=settings.REDIS["host"], port=settings.REDIS["port"], db=settings.REDIS["db"])
+
+
+class IsAuthenticated(BasePermission):
+    """
+    Allows access only to authenticated users.
+    """
+
+    def has_permission(self, request, view):
+        connection = get_redis_connection()
+        session_id = request.headers["session"]
+        return connection.get(session_id) is not None
 
 
 def get_redis_connection():
