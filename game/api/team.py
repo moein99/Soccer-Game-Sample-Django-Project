@@ -1,3 +1,4 @@
+from django.shortcuts import get_object_or_404
 from rest_framework import serializers, viewsets
 
 from game.api.helpers import get_redis_connection, IsAuthenticated
@@ -22,7 +23,7 @@ class TeamViewSet(viewsets.ModelViewSet):
 
     def get_object(self):
         email = get_redis_connection().get(self.request.headers["session"]).decode("utf-8")
-        return User.objects.get(email=email).team
+        return get_object_or_404(User, email=email).team
 
     def get_serializer_class(self):
         if self.action == 'retrieve':
