@@ -2,7 +2,7 @@ from django.shortcuts import get_object_or_404
 from rest_framework import serializers, viewsets
 
 from game.api.helpers import IsAuthenticated, get_redis_connection, IsOwner
-from game.models import Player, User, Ownership
+from game.models import Player, User
 
 
 class PlayerGetSerializer(serializers.ModelSerializer):
@@ -30,7 +30,7 @@ class PlayerViewSet(viewsets.ModelViewSet):
     def get_queryset(self):
         email = get_redis_connection().get(self.request.headers["session"]).decode("utf-8")
         user = User.objects.get(email=email)
-        return [item.player for item in Ownership.objects.filter(team=user.team).select_related("player")]
+        return Player.objects.filter(team=user.team)
 
     def get_object(self):
         player_identifier = self.request.data["identifier"]

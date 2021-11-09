@@ -5,7 +5,7 @@ from django.conf import settings
 from django.test import TestCase, Client
 from rest_framework import status
 
-from game.models import Team, User, Ownership, PlayerRole
+from game.models import Team, User, PlayerRole
 
 
 class RegisterTestCase(TestCase):
@@ -33,13 +33,11 @@ class RegisterTestCase(TestCase):
             settings.TEAM["initial_defenders"] + \
             settings.TEAM["initial_mid_fielders"] + \
             settings.TEAM["initial_attackers"]
-        self.assertEqual(Ownership.objects.count(), number_of_players)
         user = User.objects.all()[0]
-        team = Team.objects.all()[0]
-        self.assertEqual(user.team, team)
-        self.assertEqual(team.balance, settings.TEAM["initial_balance"])
-        self.assertEqual(team.value, settings.PLAYER["initial_market_value"] * number_of_players)
-        roles_to_count = Counter(Ownership.objects.all().values_list("role", flat=True))
+        self.assertEqual(user.team.player_set.count(), number_of_players)
+        self.assertEqual(user.team.balance, settings.TEAM["initial_balance"])
+        self.assertEqual(user.team.value, settings.PLAYER["initial_market_value"] * number_of_players)
+        roles_to_count = Counter(user.team.player_set.all().values_list("role", flat=True))
         self.assertEqual(roles_to_count[PlayerRole.ATTACKER], settings.TEAM["initial_attackers"])
         self.assertEqual(roles_to_count[PlayerRole.DEFENDER], settings.TEAM["initial_defenders"])
         self.assertEqual(roles_to_count[PlayerRole.MID_FIELDER], settings.TEAM["initial_mid_fielders"])

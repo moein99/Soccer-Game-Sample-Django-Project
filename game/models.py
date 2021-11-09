@@ -14,28 +14,7 @@ class Team(models.Model):
 
     @cached_property
     def value(self):
-        return Ownership.objects.filter(
-            team=self
-        ).aggregate(Sum("player__market_value")).get("player__market_value__sum")
-
-
-class Player(models.Model):
-    identifier = models.CharField(default=get_random_string, max_length=12)
-    first_name = models.CharField(max_length=100)
-    last_name = models.CharField(max_length=100)
-    country = models.CharField(max_length=30)
-    age = models.IntegerField()
-    market_value = models.IntegerField()
-
-    @staticmethod
-    def generate_random():
-        return Player.objects.create(
-            first_name=random.choice(RANDOM_FIRST_NAMES),
-            last_name=random.choice(RANDOM_LAST_NAMES),
-            country=random.choice(RANDOM_COUNTRIES),
-            age=random.randint(settings.PLAYER["start_age"], settings.PLAYER["end_age"]),
-            market_value=settings.PLAYER["initial_market_value"]
-        )
+        return self.player_set.all().aggregate(Sum("market_value")).get("market_value__sum")
 
 
 class PlayerRole:
@@ -45,9 +24,14 @@ class PlayerRole:
     ATTACKER = "at"
 
 
-class Ownership(models.Model):
-    team = models.ForeignKey(Team, on_delete=models.CASCADE)
-    player = models.OneToOneField(Player, on_delete=models.CASCADE)
+class Player(models.Model):
+    identifier = models.CharField(default=get_random_string, max_length=12)
+    first_name = models.CharField(max_length=100)
+    last_name = models.CharField(max_length=100)
+    country = models.CharField(max_length=30)
+    age = models.IntegerField()
+    market_value = models.IntegerField()
+    team = models.ForeignKey(Team, on_delete=models.SET_NULL, null=True)
 
     ROLE_OPTIONS = (
         (PlayerRole.GOAL_KEEPER, "Goal Keeper"),
@@ -56,6 +40,16 @@ class Ownership(models.Model):
         (PlayerRole.ATTACKER, "Attacker"),
     )
     role = models.CharField(max_length=2, choices=ROLE_OPTIONS)
+
+    @staticmethod
+    def generate_random():
+        return Player(
+            first_name=random.choice(RANDOM_FIRST_NAMES),
+            last_name=random.choice(RANDOM_LAST_NAMES),
+            country=random.choice(RANDOM_COUNTRIES),
+            age=random.randint(settings.PLAYER["start_age"], settings.PLAYER["end_age"]),
+            market_value=settings.PLAYER["initial_market_value"]
+        )
 
 
 class User(models.Model):
