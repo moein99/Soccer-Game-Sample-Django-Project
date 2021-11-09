@@ -19,18 +19,22 @@ class LoginAPI(generics.GenericAPIView):
     def post(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
-
         user = User.objects.filter(email=serializer.validated_data.get("email")).first()
         if (
-                user is None or
-                hash_func(serializer.validated_data.get("password")) != user.password
+            user is None or
+            hash_func(serializer.validated_data.get("password")) != user.password
         ):
             return JsonResponse(data={"error": "email or password is wrong"}, status=status.HTTP_401_UNAUTHORIZED)
-        redis_client = get_redis_connection()
-        session_id = str(uuid.uuid4())
-        redis_client.set(session_id, user.email, ex=settings.REDIS["expire_amount"])
 
+        session_id = self.set_session(user.email)
         return JsonResponse(
             data={"session_id": session_id, "timeout": 3600},
             status=status.HTTP_200_OK
         )
+
+    @staticmethod
+    def set_session(email):
+        redis_client = get_redis_connection()
+        session_id = str(uuid.uuid4())
+        redis_client.set(session_id, email, ex=settings.REDIS["expire_amount"])
+        return session_id

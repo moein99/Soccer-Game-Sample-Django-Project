@@ -49,9 +49,7 @@ class TransferViewSet(viewsets.ModelViewSet):
     permission_classes = (IsAuthenticated, IsOwner)
 
     def get_object(self):
-        player_identifier = self.request.data["player_identifier"]
-        player = get_object_or_404(Player, identifier=player_identifier)
-        self.check_object_permissions(self.request, player)
+        player = self.__check_user_permission(player_identifier=self.request.data["player_identifier"])
         return get_object_or_404(Transfer, player=player, destination_team__isnull=True)
 
     def get_serializer_class(self):
@@ -63,11 +61,17 @@ class TransferViewSet(viewsets.ModelViewSet):
     def create(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
+        self.__check_user_permission(serializer.validated_data["player"]["identifier"])
         try:
             serializer.save()
         except AlreadyExistException:
             return JsonResponse({"error": "transfer already exists."}, status=status.HTTP_409_CONFLICT)
         return JsonResponse(serializer.data, status=status.HTTP_201_CREATED)
+
+    def __check_user_permission(self, player_identifier):
+        player = get_object_or_404(Player, identifier=player_identifier)
+        self.check_object_permissions(self.request, player)
+        return player
 
 
 class AlreadyExistException(Exception):

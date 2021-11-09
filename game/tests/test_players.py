@@ -5,50 +5,36 @@ from django.test import TestCase, Client
 from rest_framework import status
 
 from game.models import User, Player
+from game.tests import TestMixin, Method, APIPath
 
 
-class PlayersTestCase(TestCase):
+class PlayersTestCase(TestCase, TestMixin):
     def setUp(self) -> None:
         self.client = Client()
         self.email1 = "email1@gmail.com"
         self.email2 = "email2@gmail.com"
         self.balance = settings.TEAM["initial_balance"]
-        self.register(self.email1, "team1")
-        self.register(self.email2, "team2")
-        self.session1 = self.login(self.email1)
-        self.session2 = self.login(self.email2)
+        self.create_user(email=self.email1, password="abc123")
+        self.create_user(email=self.email2, password="abc123")
+        self.session1 = self.login(client=self.client, email=self.email1, password="abc123")
+        self.session2 = self.login(client=self.client, email=self.email2, password="abc123")
 
-    def register(self, email, team_name):
-        register_data = {
-            "email": email,
-            "password": "abc123",
-            "repeated_password": "abc123",
-            "team_name": team_name,
-            "team_country": "Spain",
-        }
-        self.client.post(
-            path="/api/register",
-            data=json.dumps(register_data),
-            content_type='application/json'
-        )
-
-    def login(self, email):
-        data = {
-            "email": email,
-            "password": "abc123",
-        }
-        response = self.client.post(
-            path="/api/login",
-            data=json.dumps(data),
-            content_type='application/json'
-        )
-        return json.loads(response.content)["session_id"]
+    def call(self, method, session, data=None):
+        if method == Method.get:
+            return self.client.get(
+                path=APIPath.players,
+                **{"HTTP_SESSION": session}
+            )
+        elif method == Method.put:
+            return self.client.put(
+                path=APIPath.players,
+                data=json.dumps(data),
+                content_type='application/json',
+                **{"HTTP_SESSION": session}
+            )
 
     def test_get_players(self):
-        response = self.client.get(
-            path="/api/players",
-            **{"HTTP_SESSION": self.session1}
-        )
+        response = self.call(Method.get, self.session1)
         data = json.loads(response.content)
         number_of_players = \
             settings.TEAM["initial_goal_keepers"] + \
@@ -70,12 +56,7 @@ class PlayersTestCase(TestCase):
             "last_name": "new last name",
             "country": "new country",
         }
-        response = self.client.post(
-            path="/api/players",
-            data=json.dumps(data),
-            content_type='application/json',
-            **{"HTTP_SESSION": self.session1}
-        )
+        response = self.call(Method.put, self.session1, data)
         data = json.loads(response.content)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         update_fields = ['identifier', 'first_name', 'last_name', 'country']
@@ -96,10 +77,5 @@ class PlayersTestCase(TestCase):
             "last_name": "new last name",
             "country_name": "new country",
         }
-        response = self.client.post(
-            path="/api/players",
-            data=json.dumps(data),
-            content_type='application/json',
-            **{"HTTP_SESSION": self.session2}  # another user tries to update the player
-        )
+        response = self.call(Method.put, self.session2, data)
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)

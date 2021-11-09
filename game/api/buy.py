@@ -18,12 +18,10 @@ class BuyAPI(generics.GenericAPIView):
     permission_classes = [IsAuthenticated, ]
 
     def get_object(self):
-        serializer = self.get_serializer(data=self.request.data)
-        serializer.is_valid(raise_exception=True)
         return get_object_or_404(
             Transfer,
             destination_team__isnull=True,
-            player__identifier=serializer.validated_data["player_identifier"]
+            player__identifier=self.request.data["player_identifier"]
         )
 
     def post(self, request, *args, **kwargs):
@@ -41,6 +39,7 @@ class BuyAPI(generics.GenericAPIView):
             )
 
         self.do_transfer(user.team, transfer)
+        return JsonResponse({}, status=status.HTTP_200_OK)
 
     @staticmethod
     def do_transfer(team, transfer):
