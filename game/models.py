@@ -58,6 +58,15 @@ class User(models.Model):
     team = models.ForeignKey(Team, on_delete=models.CASCADE)
 
 
+class Transfer(models.Model):
+    player = models.ForeignKey(Player, on_delete=models.CASCADE)
+    source_team = models.ForeignKey(Team, on_delete=models.CASCADE, related_name="source_set")
+    destination_team = models.ForeignKey(Team, on_delete=models.CASCADE, related_name="destination_set",
+                                         default=None, null=True)
+    price = models.IntegerField()
+    increase_percentage = models.IntegerField(default=None, null=True)
+
+
 RANDOM_FIRST_NAMES = [
     "Leonel",
     "Jarrett",
