@@ -4,8 +4,7 @@ import redis
 from django.conf import settings
 from rest_framework.permissions import BasePermission
 
-from game.models import Team, Player, Ownership, PlayerRole
-
+from game.models import Team, Player, Ownership, PlayerRole, User
 
 REDIS_POOL = redis.ConnectionPool(host=settings.REDIS["host"], port=settings.REDIS["port"], db=settings.REDIS["db"])
 
@@ -19,6 +18,20 @@ class IsAuthenticated(BasePermission):
         connection = get_redis_connection()
         session_id = request.headers["session"]
         return connection.get(session_id) is not None
+
+
+class IsOwner(BasePermission):
+    """
+    Object-level permission to only allow owners of an object to edit it.
+    Assumes the model instance has an `owner` attribute.
+    """
+
+    def has_object_permission(self, request, view, obj):
+        connection = get_redis_connection()
+        session_id = request.headers["session"]
+        email = connection.get(session_id).decode("utf-8")
+        user = User.objects.get(email=email)
+        return Ownership.objects.get(player=obj).team.id == user.team.id
 
 
 def get_redis_connection():
