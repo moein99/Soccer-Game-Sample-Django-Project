@@ -7,7 +7,7 @@ from rest_framework import status
 from game.api.helpers import get_redis_connection
 
 
-class RegisterTestCase(TestCase):
+class LoginTestCase(TestCase):
     def setUp(self) -> None:
         self.client = Client()
         self.email = "login@gmail.com"

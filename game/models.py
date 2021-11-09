@@ -4,6 +4,7 @@ from django.conf import settings
 from django.db import models
 from django.db.models import Sum
 from django.utils.functional import cached_property
+from django.utils.crypto import get_random_string
 
 
 class Team(models.Model):
@@ -19,6 +20,7 @@ class Team(models.Model):
 
 
 class Player(models.Model):
+    identifier = models.CharField(default=get_random_string, max_length=12)
     first_name = models.CharField(max_length=100)
     last_name = models.CharField(max_length=100)
     country = models.CharField(max_length=30)
