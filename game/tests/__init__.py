@@ -10,7 +10,7 @@ class APIPath:
     team = "/api/team"
     players = "/api/players"
     transfer = "/api/transfer"
-    buy = "/api/transfer/buy"
+    buy = "/api/buy"
 
 
 class Method:

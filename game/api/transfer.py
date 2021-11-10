@@ -22,18 +22,13 @@ class GetTransferSerializer(serializers.ModelSerializer):
                   'age', 'market_value', 'price']
 
 
-class CreateOrUpdateTransferSerializer(serializers.ModelSerializer):
+class CreateTransferSerializer(serializers.ModelSerializer):
     player_identifier = serializers.CharField(max_length=12, source="player.identifier")
     price = serializers.IntegerField()
 
     class Meta:
         model = Transfer
         fields = ["player_identifier", "price"]
-
-    def update(self, instance, validated_data):
-        instance.price = validated_data["price"]
-        instance.save()
-        return instance
 
     def create(self, validated_data):
         user = get_user_from_request(self.context["request"])
@@ -44,19 +39,34 @@ class CreateOrUpdateTransferSerializer(serializers.ModelSerializer):
         raise AlreadyExistException()
 
 
+class UpdateTransferSerializer(serializers.ModelSerializer):
+    price = serializers.IntegerField()
+
+    class Meta:
+        model = Transfer
+        fields = ["price"]
+
+    def update(self, instance, validated_data):
+        instance.price = validated_data["price"]
+        instance.save()
+        return instance
+
+
 class TransferViewSet(viewsets.ModelViewSet):
     queryset = Transfer.objects.filter(destination_team__isnull=True)
     permission_classes = (IsAuthenticated, IsOwner)
 
     def get_object(self):
-        player = self.__check_user_permission(player_identifier=self.request.data["player_identifier"])
+        player = self.__check_user_permission(player_identifier=self.kwargs["player_identifier"])
         return get_object_or_404(Transfer, player=player, destination_team__isnull=True)
 
     def get_serializer_class(self):
         if self.action == 'list':
             return GetTransferSerializer
-        elif self.action == 'create' or self.action == "update":
-            return CreateOrUpdateTransferSerializer
+        elif self.action == 'create':
+            return CreateTransferSerializer
+        elif self.action == "update":
+            return UpdateTransferSerializer
 
     def create(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)

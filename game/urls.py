@@ -11,7 +11,9 @@ urlpatterns = [
     path('api/register', RegisterAPI.as_view(), name="register"),
     path('api/login', LoginAPI.as_view(), name="login"),
     path('api/team', TeamViewSet.as_view({'get': 'retrieve', 'put': 'update'}), name="team"),
-    path('api/players', PlayerViewSet.as_view({'get': 'list', 'put': 'update'}), name="players"),
-    path('api/transfer', TransferViewSet.as_view({'get': 'list', 'post': 'create', 'put': 'update'}), name="transfer"),
-    path('api/transfer/buy', BuyAPI.as_view(), name="buy"),
+    path('api/players', PlayerViewSet.as_view({'get': 'list'}), name="players"),
+    path('api/players/<str:player_identifier>', PlayerViewSet.as_view({'put': 'update'}), name="players"),
+    path('api/transfer', TransferViewSet.as_view({'get': 'list', 'post': 'create'}), name="transfer"),
+    path('api/transfer/<str:player_identifier>', TransferViewSet.as_view({'put': 'update'}), name="transfer-update"),
+    path('api/buy', BuyAPI.as_view(), name="buy"),
 ]

@@ -14,7 +14,7 @@ class PlayerGetSerializer(serializers.ModelSerializer):
 class PlayerUpdateSerializer(serializers.ModelSerializer):
     class Meta:
         model = Player
-        fields = ['identifier', 'first_name', 'last_name', 'country']
+        fields = ['first_name', 'last_name', 'country']
 
 
 class PlayerViewSet(viewsets.ModelViewSet):
@@ -33,7 +33,7 @@ class PlayerViewSet(viewsets.ModelViewSet):
         return Player.objects.filter(team=user.team)
 
     def get_object(self):
-        player_identifier = self.request.data["identifier"]
+        player_identifier = self.kwargs["player_identifier"]
         player = get_object_or_404(Player, identifier=player_identifier)
         self.check_object_permissions(self.request, player)
         return player
