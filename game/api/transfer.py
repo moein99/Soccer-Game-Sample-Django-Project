@@ -14,13 +14,14 @@ class GetTransferSerializer(serializers.ModelSerializer):
     team_name = serializers.CharField(source="source_team.name")
     country = serializers.CharField(source="player.country")
     age = serializers.CharField(source="player.age")
+    role = serializers.CharField(source="player.get_display_role")
     market_value = serializers.IntegerField(source="player.market_value")
     price = serializers.IntegerField()
 
     class Meta:
         model = Transfer
         fields = ['identifier', 'first_name', 'last_name', 'team_name', 'country',
-                  'age', 'market_value', 'price']
+                  'age', 'role', 'market_value', 'price']
 
 
 class CreateTransferSerializer(serializers.ModelSerializer):
@@ -37,7 +38,7 @@ class CreateTransferSerializer(serializers.ModelSerializer):
         transfer = Transfer.objects.filter(player=player, source_team=user.team, destination_team=None)
         if not transfer.exists():
             return Transfer.objects.create(player=player, source_team=user.team, price=validated_data["price"])
-        raise AlreadyExistException()
+        raise AlreadyExistsException()
 
 
 class UpdateTransferSerializer(serializers.ModelSerializer):
@@ -75,7 +76,7 @@ class TransferViewSet(viewsets.ModelViewSet):
         self.__check_user_permission(serializer.validated_data["player"]["identifier"])
         try:
             serializer.save()
-        except AlreadyExistException:
+        except AlreadyExistsException:
             return JsonResponse({"error": "transfer already exists."}, status=status.HTTP_409_CONFLICT)
         return JsonResponse(serializer.data, status=status.HTTP_201_CREATED)
 
@@ -85,5 +86,5 @@ class TransferViewSet(viewsets.ModelViewSet):
         return player
 
 
-class AlreadyExistException(Exception):
+class AlreadyExistsException(Exception):
     pass

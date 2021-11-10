@@ -1,6 +1,5 @@
 from django.db import transaction
-from django.http import HttpResponse
-from rest_framework import serializers, generics, status
+from rest_framework import serializers, viewsets
 
 from game.api.helpers import generate_random_team, hash_func
 from game.models import User
@@ -15,7 +14,6 @@ class RegisterSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = ('email', 'password', 'repeated_password', 'team_name', 'team_country')
-        extra_kwargs = {'password': {'write_only': True}}
 
     def validate_repeated_password(self, repeated_password):
         if repeated_password != self.initial_data.get("password"):
@@ -31,12 +29,9 @@ class RegisterSerializer(serializers.ModelSerializer):
             )
         return user
 
+    def to_representation(self, obj):
+        return {"email": obj.email}
 
-class RegisterAPI(generics.GenericAPIView):
+
+class RegisterViewSet(viewsets.ModelViewSet):
     serializer_class = RegisterSerializer
-
-    def post(self, request, *args, **kwargs):
-        serializer = self.get_serializer(data=request.data)
-        serializer.is_valid(raise_exception=True)
-        serializer.save()
-        return HttpResponse(status=status.HTTP_201_CREATED)

@@ -51,6 +51,9 @@ class Player(models.Model):
             market_value=settings.PLAYER["initial_market_value"]
         )
 
+    def get_display_role(self):
+        return dict(self.ROLE_OPTIONS)[self.role]
+
 
 class User(models.Model):
     email = models.EmailField(max_length=100, unique=True)
