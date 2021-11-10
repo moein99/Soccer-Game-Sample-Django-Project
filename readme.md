@@ -90,6 +90,7 @@ data:
 ```
 
 ### Run the project in a virtual environment
+0. Befure moving on, you need to have a redis-server up and running in your machine. You can change host, port and db in the settings file. Use [this](https://redis.io/topics/quickstart) link for installing Redis.
 1. Make a virtual environment
 ```shell
 python3 -m virtualenv .venv

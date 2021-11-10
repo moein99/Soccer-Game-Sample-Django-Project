@@ -9,7 +9,7 @@ https://docs.djangoproject.com/en/3.2/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/3.2/ref/settings/
 """
-
+import os
 from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -116,8 +116,10 @@ TEAM = {
     "initial_balance": 5000000
 }
 
+environment = os.getenv('ENVIRONMENT', "")
+
 REDIS = {
-    "host": "localhost",
+    "host": "redis" if environment == "docker" else "localhost",
     "port": 6379,
     "db": 0,
     "expire_amount": 3600,  # seconds
