@@ -27,7 +27,7 @@ class PlayersTestCase(TestCase, TestMixin):
             )
         elif method == Method.put:
             return self.client.put(
-                path=APIPath.players,
+                path=f"{APIPath.players}/{data['identifier']}",
                 data=json.dumps(data),
                 content_type='application/json',
                 **{"HTTP_SESSION": session}
@@ -59,7 +59,7 @@ class PlayersTestCase(TestCase, TestMixin):
         response = self.call(Method.put, self.session1, data)
         data = json.loads(response.content)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        update_fields = ['identifier', 'first_name', 'last_name', 'country']
+        update_fields = ['first_name', 'last_name', 'country']
         for field in update_fields:
             self.assertTrue(field in data)
         self.assertEqual(len(update_fields), len(data))

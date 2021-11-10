@@ -32,7 +32,7 @@ class TransferTestCase(TestCase, TestMixin):
             )
         elif method == Method.put:
             return self.client.put(
-                path=APIPath.transfer,
+                path=f"{APIPath.transfer}/{data['player_identifier']}",
                 data=data,
                 content_type='application/json',
                 **{"HTTP_SESSION": session}
