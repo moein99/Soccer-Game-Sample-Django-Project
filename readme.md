@@ -46,7 +46,7 @@ data:
 }
 ```
 4. Players  
-GET returns list of players in user's team.
+GET returns list of players in user's team.  
 PUT updates a player's information.
 ```
 GET /api/players
