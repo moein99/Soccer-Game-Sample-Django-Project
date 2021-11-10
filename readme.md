@@ -2,7 +2,7 @@
 
 ## Sections
 1. [Endpoints](#endpoints)
-2. [Run the project in a virtual environment](#run-the-project-on-your-machine) 
+2. [Run the project in a virtual environment](#run-the-project-in-a-virtual-environment) 
 3. [Run the project using docker-compose](#run-the-project-using-docker-compose) 
 
 ### Endpoints:
