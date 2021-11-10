@@ -1,3 +1,4 @@
+from django.core.validators import MinValueValidator
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404
 from rest_framework import serializers, viewsets, status
@@ -24,7 +25,7 @@ class GetTransferSerializer(serializers.ModelSerializer):
 
 class CreateTransferSerializer(serializers.ModelSerializer):
     player_identifier = serializers.CharField(max_length=12, source="player.identifier")
-    price = serializers.IntegerField()
+    price = serializers.IntegerField(validators=[MinValueValidator(1)])
 
     class Meta:
         model = Transfer
@@ -40,7 +41,7 @@ class CreateTransferSerializer(serializers.ModelSerializer):
 
 
 class UpdateTransferSerializer(serializers.ModelSerializer):
-    price = serializers.IntegerField()
+    price = serializers.IntegerField(validators=[MinValueValidator(1)])
 
     class Meta:
         model = Transfer
