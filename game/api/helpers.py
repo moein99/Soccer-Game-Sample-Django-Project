@@ -17,8 +17,8 @@ class IsAuthenticated(BasePermission):
 
     def has_permission(self, request, view):
         connection = get_redis_connection()
-        session_id = request.headers["session"]
-        return connection.get(session_id) is not None
+        session_id = request.headers.get("session")
+        return session_id is not None and connection.get(session_id) is not None
 
 
 class IsOwner(BasePermission):

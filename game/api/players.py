@@ -6,9 +6,11 @@ from game.models import Player, User
 
 
 class PlayerGetSerializer(serializers.ModelSerializer):
+    role = serializers.CharField(source="get_display_role")
+
     class Meta:
         model = Player
-        fields = ['identifier', 'first_name', 'last_name', 'country', 'age', 'market_value']
+        fields = ['identifier', 'first_name', 'last_name', 'role', 'country', 'age', 'market_value']
 
 
 class PlayerUpdateSerializer(serializers.ModelSerializer):

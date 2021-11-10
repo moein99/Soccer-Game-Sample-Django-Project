@@ -1,0 +1,300 @@
+{
+	"variables": [],
+	"info": {
+		"name": "Soccer Game",
+		"_postman_id": "dd953cff-cd55-1993-7a7e-a35061f02ca4",
+		"description": "",
+		"schema": "https://schema.getpostman.com/json/collection/v2.0.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Register",
+			"request": {
+				"url": "localhost:8000/api/register",
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "email",
+							"value": "sample1@gmail.com",
+							"type": "text",
+							"description": ""
+						},
+						{
+							"key": "password",
+							"value": "password1",
+							"type": "text",
+							"description": ""
+						},
+						{
+							"key": "repeated_password",
+							"value": "password1",
+							"type": "text",
+							"description": ""
+						},
+						{
+							"key": "team_name",
+							"value": "Real Madrid",
+							"type": "text",
+							"description": ""
+						},
+						{
+							"key": "team_country",
+							"value": "Spain",
+							"type": "text",
+							"description": ""
+						}
+					]
+				},
+				"description": ""
+			},
+			"response": []
+		},
+		{
+			"name": "Login",
+			"request": {
+				"url": "localhost:8000/api/login",
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "email",
+							"value": "sample1@gmail.com",
+							"description": "",
+							"type": "text"
+						},
+						{
+							"key": "password",
+							"value": "password1",
+							"description": "",
+							"type": "text"
+						}
+					]
+				},
+				"description": ""
+			},
+			"response": []
+		},
+		{
+			"name": "Get Team",
+			"request": {
+				"url": "localhost:8000/api/team",
+				"method": "GET",
+				"header": [
+					{
+						"key": "session",
+						"value": "<session_id>",
+						"description": ""
+					}
+				],
+				"body": {},
+				"description": ""
+			},
+			"response": []
+		},
+		{
+			"name": "Update Team",
+			"request": {
+				"url": "localhost:8000/api/team",
+				"method": "PUT",
+				"header": [
+					{
+						"key": "session",
+						"value": "<session_id>",
+						"description": ""
+					}
+				],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "name",
+							"value": "<new_team_name>",
+							"description": "",
+							"type": "text"
+						},
+						{
+							"key": "country",
+							"value": "<new_country_name>",
+							"description": "",
+							"type": "text"
+						},
+						{
+							"key": "",
+							"value": "",
+							"description": "",
+							"type": "text",
+							"disabled": true
+						}
+					]
+				},
+				"description": ""
+			},
+			"response": []
+		},
+		{
+			"name": "Get Team Players",
+			"request": {
+				"url": "localhost:8000/api/players",
+				"method": "GET",
+				"header": [
+					{
+						"key": "session",
+						"value": "<session_id>",
+						"description": ""
+					}
+				],
+				"body": {},
+				"description": ""
+			},
+			"response": []
+		},
+		{
+			"name": "Update Player",
+			"request": {
+				"url": "localhost:8000/api/players/<player_identifier>",
+				"method": "PUT",
+				"header": [
+					{
+						"key": "session",
+						"value": "<session_id>",
+						"description": ""
+					}
+				],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "first_name",
+							"value": "<new_name>",
+							"description": "",
+							"type": "text"
+						},
+						{
+							"key": "last_name",
+							"value": "<new_last_name>",
+							"description": "",
+							"type": "text"
+						},
+						{
+							"key": "country",
+							"value": "<new_country>",
+							"description": "",
+							"type": "text"
+						}
+					]
+				},
+				"description": ""
+			},
+			"response": []
+		},
+		{
+			"name": "Create Transfer",
+			"request": {
+				"url": "localhost:8000/api/transfer",
+				"method": "POST",
+				"header": [
+					{
+						"key": "session",
+						"value": "<session_id>",
+						"description": ""
+					}
+				],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "player_identifier",
+							"value": "<player_identifier>",
+							"description": "",
+							"type": "text"
+						},
+						{
+							"key": "price",
+							"value": "<price>",
+							"description": "should be higher than zero",
+							"type": "text"
+						}
+					]
+				},
+				"description": ""
+			},
+			"response": []
+		},
+		{
+			"name": "Get Transfers",
+			"request": {
+				"url": "localhost:8000/api/transfer",
+				"method": "GET",
+				"header": [
+					{
+						"key": "session",
+						"value": "<session_id>",
+						"description": ""
+					}
+				],
+				"body": {},
+				"description": ""
+			},
+			"response": []
+		},
+		{
+			"name": "Update Transfer",
+			"request": {
+				"url": "localhost:8000/api/transfer/<player_identifier>",
+				"method": "PUT",
+				"header": [
+					{
+						"key": "session",
+						"value": "<session_id>",
+						"description": ""
+					}
+				],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "price",
+							"value": "<price>",
+							"description": "",
+							"type": "text"
+						}
+					]
+				},
+				"description": ""
+			},
+			"response": []
+		},
+		{
+			"name": "Buy",
+			"request": {
+				"url": "localhost:8000/api/buy",
+				"method": "POST",
+				"header": [
+					{
+						"key": "session",
+						"value": "<session_id>",
+						"description": ""
+					}
+				],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "player_identifier",
+							"value": "<player_identifier>",
+							"description": "",
+							"type": "text"
+						}
+					]
+				},
+				"description": ""
+			},
+			"response": []
+		}
+	]
+}
