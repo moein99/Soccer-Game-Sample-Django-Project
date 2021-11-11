@@ -10,18 +10,7 @@ from game.models import Team, Player, PlayerRole, User
 REDIS_POOL = redis.ConnectionPool(host=settings.REDIS["host"], port=settings.REDIS["port"], db=settings.REDIS["db"])
 
 
-class IsAuthenticated(BasePermission):
-    """
-    Allows access only to authenticated users.
-    """
-
-    def has_permission(self, request, view):
-        connection = get_redis_connection()
-        session_id = request.headers.get("session")
-        return session_id is not None and connection.get(session_id) is not None
-
-
-class IsOwner(BasePermission):
+class IsPlayerOwner(BasePermission):
     """
     Object-level permission to only allow owners of an object to edit it.
     Assumes the model instance has an `owner` attribute.

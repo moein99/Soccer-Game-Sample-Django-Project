@@ -1,7 +1,8 @@
 from django.shortcuts import get_object_or_404
 from rest_framework import serializers, viewsets
 
-from game.api.helpers import IsAuthenticated, get_redis_connection, IsOwner
+from game.api import SessionRequiredMixin
+from game.api.helpers import get_redis_connection, IsPlayerOwner
 from game.models import Player, User
 
 
@@ -19,9 +20,9 @@ class PlayerUpdateSerializer(serializers.ModelSerializer):
         fields = ['first_name', 'last_name', 'country']
 
 
-class PlayerViewSet(viewsets.ModelViewSet):
+class PlayerViewSet(viewsets.ModelViewSet, SessionRequiredMixin):
     serializer_class = PlayerGetSerializer
-    permission_classes = (IsAuthenticated, IsOwner)
+    permission_classes = (IsPlayerOwner,)
 
     def get_serializer_class(self):
         if self.action == "list":

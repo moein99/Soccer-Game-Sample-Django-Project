@@ -5,7 +5,8 @@ from django.http import JsonResponse
 from django.shortcuts import get_object_or_404
 from rest_framework import generics, serializers, status
 
-from game.api.helpers import IsAuthenticated, get_user_from_request
+from game.api import SessionRequiredMixin
+from game.api.helpers import get_user_from_request
 from game.models import Transfer
 
 
@@ -13,9 +14,8 @@ class BuyPlayerSerializer(serializers.Serializer):
     player_identifier = serializers.CharField(max_length=12)
 
 
-class BuyAPI(generics.GenericAPIView):
+class BuyAPI(generics.GenericAPIView, SessionRequiredMixin):
     serializer_class = BuyPlayerSerializer
-    permission_classes = [IsAuthenticated, ]
 
     def get_object(self):
         return get_object_or_404(
@@ -25,6 +25,8 @@ class BuyAPI(generics.GenericAPIView):
         )
 
     def post(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
         transfer = self.get_object()
         user = get_user_from_request(request)
         if user.team.id == transfer.player.team.id:

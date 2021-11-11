@@ -1,6 +1,7 @@
 from rest_framework import serializers, viewsets
 
-from game.api.helpers import IsAuthenticated, get_user_from_request
+from game.api import SessionRequiredMixin
+from game.api.helpers import get_user_from_request
 from game.models import Team
 
 
@@ -16,9 +17,7 @@ class TeamUpdateSerializer(serializers.ModelSerializer):
         fields = ['name', 'country']
 
 
-class TeamViewSet(viewsets.ModelViewSet):
-    permission_classes = (IsAuthenticated,)
-
+class TeamViewSet(viewsets.ModelViewSet, SessionRequiredMixin):
     def get_object(self):
         user = get_user_from_request(self.request)
         return user.team
