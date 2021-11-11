@@ -3,7 +3,8 @@ from django.http import JsonResponse
 from django.shortcuts import get_object_or_404
 from rest_framework import serializers, viewsets, status
 
-from game.api.helpers import IsAuthenticated, get_user_from_request, IsOwner
+from game.api import SessionRequiredMixin
+from game.api.helpers import get_user_from_request, IsPlayerOwner
 from game.models import Transfer, Player
 
 
@@ -54,9 +55,9 @@ class UpdateTransferSerializer(serializers.ModelSerializer):
         return instance
 
 
-class TransferViewSet(viewsets.ModelViewSet):
+class TransferViewSet(viewsets.ModelViewSet, SessionRequiredMixin):
     queryset = Transfer.objects.filter(destination_team__isnull=True)
-    permission_classes = (IsAuthenticated, IsOwner)
+    permission_classes = (IsPlayerOwner,)
 
     def get_object(self):
         player = self.__check_user_permission(player_identifier=self.kwargs["player_identifier"])
